@@ -1,28 +1,38 @@
 'use strict';
 
 const firstPromise = new Promise((resolve, reject) => {
+  const timeoutId = setTimeout(() => {
+    reject(new Error('First promise was rejected'));
+  }, 3000);
+
   document.addEventListener('click', (e) => {
     if (e.button === 0) {
+      clearTimeout(timeoutId);
       resolve('First promise was resolved');
     }
   });
-
-  setTimeout(() => {
-    reject(new Error('First promise was rejected'));
-  }, 3000);
 });
 
 const secondPromise = new Promise((resolve) => {
+  let isResolved = false;
+
+  const resolveOnce = (message) => {
+    if (!isResolved) {
+      isResolved = true;
+      resolve(message);
+    }
+  };
+
   document.addEventListener('click', (e) => {
     if (e.button === 0) {
-      resolve('Second promise was resolved');
+      resolveOnce('Second promise was resolved');
     }
   });
 
   document.addEventListener('contextmenu', (e) => {
     if (e.button === 2) {
       e.preventDefault();
-      resolve('Second promise was resolved');
+      resolveOnce('Second promise was resolved');
     }
   });
 });
@@ -31,9 +41,18 @@ const thirdPromise = new Promise((resolve) => {
   let leftClicked = false;
   let rightClicked = false;
 
+  let isResolved = false;
+
+  const resolveOnce = (message) => {
+    if (!isResolved) {
+      isResolved = true;
+      resolve(message);
+    }
+  };
+
   const checkCompletion = () => {
     if (leftClicked && rightClicked) {
-      resolve('Third promise was resolved');
+      resolveOnce('Third promise was resolved');
     }
   };
 
